@@ -11,8 +11,8 @@ using MvcWebIdentity.Entities;
 
 namespace MvcWebIdentity.Controllers
 {
-    [Authorize]
     //[Authorize(Roles = "Admin")]
+    [Authorize]
     public class AlunosController : Controller
     {
         private readonly AppDbContext _context;
@@ -23,6 +23,7 @@ namespace MvcWebIdentity.Controllers
         }
 
         // GET: Alunos
+        [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
               return _context.Alunos != null ? 
@@ -31,6 +32,8 @@ namespace MvcWebIdentity.Controllers
         }
 
         // GET: Alunos/Details/5
+        //[Authorize (Roles = "User, Admin, Gerente")]
+        [Authorize(Policy ="RequireUserAdminGerenteRole")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _context.Alunos == null)
@@ -49,6 +52,8 @@ namespace MvcWebIdentity.Controllers
         }
 
         // GET: Alunos/Create
+        //[Authorize(Roles = "User, Admin, Gerente")]
+        [Authorize(Policy = "RequireUserAdminGerenteRole")]
         public IActionResult Create()
         {
             return View();
@@ -59,6 +64,7 @@ namespace MvcWebIdentity.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "User, Admin, Gerente")]
         public async Task<IActionResult> Create([Bind("AlunoId,Nome,Email,Idade,Curso")] Aluno aluno)
         {
             if (ModelState.IsValid)
@@ -71,6 +77,7 @@ namespace MvcWebIdentity.Controllers
         }
 
         // GET: Alunos/Edit/5
+        [Authorize(Roles = " Admin, Gerente")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Alunos == null)
@@ -91,6 +98,7 @@ namespace MvcWebIdentity.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = " Admin, Gerente")]
         public async Task<IActionResult> Edit(int id, [Bind("AlunoId,Nome,Email,Idade,Curso")] Aluno aluno)
         {
             if (id != aluno.AlunoId)
@@ -122,6 +130,7 @@ namespace MvcWebIdentity.Controllers
         }
 
         // GET: Alunos/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.Alunos == null)
@@ -142,6 +151,7 @@ namespace MvcWebIdentity.Controllers
         // POST: Alunos/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             if (_context.Alunos == null)
